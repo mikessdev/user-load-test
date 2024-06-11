@@ -35,6 +35,11 @@ async function getMySQLConnection() {
                     const query = `DELETE FROM user;`
                     await client.query(query);
                 },
+                async count() {
+                    const query = `SELECT COUNT(*) FROM user;`
+                    const result = await client.query(query);
+                    return Number(result.rows[0].total);
+                }
             }
         }
       }catch(error){
