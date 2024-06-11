@@ -1,44 +1,92 @@
-import { mysql } from 'mysql'
+import mysql from 'mysql2/promise'
 
 
-async function getMySQLConnection() {
-    const client = mysql.createConnection({
-        host: 'localhost',
-        user: 'user',
-        password: 'root',
-        database: 'userLoadTest'
+
+export async function openConnection () {
+    try {
+        const client = await mysql.createConnection({
+            host: 'localhost',
+            user: 'user',
+            password: 'root',
+            database: 'mydatabase'
+          });
+
+          console.log('Conectado ao MySQL 🎲');
+          return client;
+        
+    } catch (error) {
+        console.error('Erro ao conectar ao MySQL:', error);
+    }
+    
+
+}
+
+export async function closeConnection (client) {
+    return await client.end((err) => {
+        if (err) {
+          console.error('Erro ao encerrar a conexão:', err.stack);
+          return;
+        }
+        console.log('Conexão encerrada.');
       });
+}
 
-      try{
-        await client.connect();
+
+export async function getMySQLConnection() {
+    try{
+        const client = await openConnection()
         return {
-            client,
-            users: {
+            user: {
                 async createTable() {
                     const query = 
                         `CREATE TABLE user (
-                            id int,
+                            id int AUTO_INCREMENT,
                             lastName varchar(255),
                             firstName varchar(255),
                             address varchar(255),
-                            city varchar(255)
+                            city varchar(255),
+                            PRIMARY KEY (id)
                         );`
-
-                    await client.query(query);
+                    try {
+                        const tables = await client.query('SHOW TABLES LIKE "user"')
+                        if(tables.length === 0) {
+                            console.log('Criando tabela user');
+                            client.query(query);
+                            return;
+                        }
+                        console.log('Tabela user já existe');
+                        
+                    } catch (error) {
+                        console.error('Erro ao criar tabela:', error);
+                    }
                     
                 },
                 async insertMany(users) {
                     const query = `INSERT INTO user (id, lastName, firstName, address, city) VALUES ?`;
-                    await client.query(query, users);
+                    try {
+                        return client.query(query, users);
+                    } catch (error) {
+                        console.error('Erro ao inserir usuários:', error);
+                    }
                 },
                 async deleteAll() {
                     const query = `DELETE FROM user;`
-                    await client.query(query);
+                    try {
+                        await client.query(query);
+                    } catch (error) {
+                        console.error('Erro ao deletar usuários:', error);
+                    }
                 },
                 async count() {
                     const query = `SELECT COUNT(*) FROM user;`
-                    const result = await client.query(query);
-                    return Number(result.rows[0].total);
+                    
+                    try {
+                        const result = await client.query(query);
+                        return result[0][0]['COUNT(*)']
+                    } catch (error) {
+                        console.error('Erro ao contar usuários:', error);
+                        
+                    }
                 }
             }
         }

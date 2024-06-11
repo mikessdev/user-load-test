@@ -1,15 +1,19 @@
-const express = require('express')
-const app = express()
-const port = 3006
+import { seedMySQL} from './seed.js';
+import { getMySQLConnection, closeConnection } from './db.js';
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+console.log('Hello World!')
 
-app.get('/user', (req, res) => {
-  res.send('users!')
-})
+const { user } = await getMySQLConnection();
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+if(await user.count() === 0) {
+    await seedMySQL(1);
+    await closeConnection();
+}
+
+
+
+
+
+
+
+
