@@ -27,7 +27,7 @@ export async function closeConnection (client) {
           console.error('Erro ao encerrar a conexão:', err.stack);
           return;
         }
-        console.log('Conexão encerrada.');
+        console.log('Conexão encerrada. 😶‍🌫️');
       });
 }
 
@@ -63,10 +63,15 @@ export async function getMySQLConnection() {
                     
                 },
                 async insertMany(users) {
-                    const query = 'INSERT INTO user (id, lastName, firstName, address, city) VALUES ?';
+                    const query = 'INSERT INTO user (firstName, lastName, address, city) VALUES (?, ?, ?, ?)';
 
+                    
                     try {
-                        return await client.query(query, users);
+                        for (const user of users) {
+                            const {firstName, lastName, address, city} = user;
+                             await client.query(query, [firstName, lastName, address, city]);
+                        }
+                        
                     } catch (error) {
                         console.error('Erro ao inserir usuários:', error);
                     }
