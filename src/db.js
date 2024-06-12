@@ -67,9 +67,12 @@ export async function getMySQLConnection() {
 
                     
                     try {
+                        let number = 1;
                         for (const user of users) {
                             const {firstName, lastName, address, city} = user;
-                             await client.query(query, [firstName, lastName, address, city]);
+                            await client.query(query, [firstName, lastName, address, city]);
+                            number++;
+                            console.log(number + ' user: ' + firstName)
                         }
                         
                     } catch (error) {

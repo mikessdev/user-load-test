@@ -1,14 +1,14 @@
 import { seedMySQL} from './seed.js';
 import { getMySQLConnection, closeConnection } from './db.js';
 
-console.log('Hello World!')
-
 const { client, user } = await getMySQLConnection();
 
-if(await user.count() === 0) {
-    await seedMySQL(4);
-    await closeConnection(client);
-}
+if(await user.count() != 0) {
+    await user.deleteAll()
+    } 
+    
+await seedMySQL(90_000);
+await closeConnection(client);
 
 
 
