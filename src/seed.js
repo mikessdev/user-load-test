@@ -3,7 +3,7 @@ import { getMySQLConnection, closeConnection } from './db.js';
 
 
 export async function seedMySQL(amount) {
-    const { user } = await getMySQLConnection();
+    const { client,user } = await getMySQLConnection();
     
     await user.createTable();
 
@@ -21,8 +21,8 @@ export async function seedMySQL(amount) {
 
     await user.insertMany(users);
 
-    console.log('Done inserting. Was inseting', await users.count(), 'users');
+    console.log('Done inserting. Was inseting', await user.count(), 'users');
 
-    closeConnection();
+    closeConnection(client);
 
 }

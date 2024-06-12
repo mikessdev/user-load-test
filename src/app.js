@@ -3,11 +3,11 @@ import { getMySQLConnection, closeConnection } from './db.js';
 
 console.log('Hello World!')
 
-const { user } = await getMySQLConnection();
+const { client, user } = await getMySQLConnection();
 
 if(await user.count() === 0) {
     await seedMySQL(1);
-    await closeConnection();
+    await closeConnection(client);
 }
 
 

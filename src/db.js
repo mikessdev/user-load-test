@@ -36,18 +36,19 @@ export async function getMySQLConnection() {
     try{
         const client = await openConnection()
         return {
+            client,
             user: {
                 async createTable() {
-                    const query = 
-                        `CREATE TABLE user (
-                            id int AUTO_INCREMENT,
-                            lastName varchar(255),
-                            firstName varchar(255),
-                            address varchar(255),
-                            city varchar(255),
-                            PRIMARY KEY (id)
-                        );`
                     try {
+                        const query = 
+                            `CREATE TABLE user (
+                                id int AUTO_INCREMENT,
+                                lastName varchar(255),
+                                firstName varchar(255),
+                                address varchar(255),
+                                city varchar(255),
+                                PRIMARY KEY (id)
+                            );`
                         const tables = await client.query('SHOW TABLES LIKE "user"')
                         if(tables.length === 0) {
                             console.log('Criando tabela user');
@@ -62,9 +63,10 @@ export async function getMySQLConnection() {
                     
                 },
                 async insertMany(users) {
-                    const query = `INSERT INTO user (id, lastName, firstName, address, city) VALUES ?`;
+                    const query = 'INSERT INTO user (id, lastName, firstName, address, city) VALUES ?';
+
                     try {
-                        return client.query(query, users);
+                        return await client.query(query, users);
                     } catch (error) {
                         console.error('Erro ao inserir usuários:', error);
                     }
