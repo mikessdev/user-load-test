@@ -63,33 +63,22 @@ export async function getMySQLConnection() {
                     
                 },
                 async insertMany(users) {
-                    const query = 'INSERT INTO user (firstName, lastName, address, city) VALUES (?, ?, ?, ?)';
-
-                    
                     try {
-                        // 05:35 minutos 
 
-                        // let number = 1;
-                        // for (const user of users) {
-                        //     const {firstName, lastName, address, city} = user;
-                        //     await client.query(query, [firstName, lastName, address, city]);
-                        //     number++;
-                        //     console.log(number + ' user: ' + firstName)
-                        // }
+                        let insert = 'insert into user\n (firstName, lastName, address, city)\n values\n'
+                        const quote = (string) => `${string ? `"${string.replaceAll('"', '\\"')}"` : null}`
 
+                        for (let i = 0; i < users.length; i++) {
+                            const {firstName, lastName, address, city} = users[i];
 
-                        // 00:04 minutos
-                        
-                        let number = 1;
-                        for (const user of users) {
-                            const {firstName, lastName, address, city} = user;
-                             client.query(query, [firstName, lastName, address, city]);
-                            number++;
-                            console.log(number + ' user: ' + firstName)
+                            insert += `\n ${ i == 0 ? '' : ', '} (${quote(firstName)}, ${quote(lastName)}, ${quote(address)}, ${quote(city)})` 
+                          
                         }
 
+                        console.log('tamanho da string', insert.length);
 
-                        
+                        await client.query(insert);
+                                 
                     } catch (error) {
                         console.error('Erro ao inserir usuários:', error);
                     }

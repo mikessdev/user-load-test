@@ -7,7 +7,7 @@ if(await user.count() != 0) {
     await user.deleteAll()
     } 
     
-await seedMySQL(90_000);
+await seedMySQL(8370000);
 await closeConnection(client);
 
 
